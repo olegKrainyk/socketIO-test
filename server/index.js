@@ -4,9 +4,17 @@ const io = require('socket.io')(3001, {
     },
 })
 
+let messages = [];
+
 io.on('connection', socket => {
     console.log(socket.id)
+
     socket.on('send-message', message => {
-        socket.broadcast.emit('receive-message', message)
+
+        if(message != null && message != ''){
+            messages.push(message)
+            console.log(messages)
+            io.emit('receive-message', messages)
+        }
     })
 })

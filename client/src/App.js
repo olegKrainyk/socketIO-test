@@ -1,32 +1,37 @@
-import { useState } from 'react';
+import { useState } from 'react'
 import { io } from 'socket.io-client'
 
 export default function App() {
 
+
+  const [message, setMessage] = useState('')
+  const [messages, setMessages] = useState([])
+
   const socket = io('http://localhost:3001')
 
-  const [message, setMessage] = useState('');
-
-  const [messages, setMessages] = useState([]);
-
   socket.on("receive-message", m => {
-    setMessage(m);
-    displayMessage();
+   setMessages(m)
   })
 
   const handleChangeMessage = (e) => {
-    setMessage(e.target.value);
+    setMessage(e.target.value)
   }
 
   const displayMessage = () => {
-    setMessages([...messages, message]);
-    console.log(messages);
+    socket.emit('send-message', message)
   }
 
   return (
     <div className="App">
-      <input value={message} onChange={handleChangeMessage}></input>
+      <input onChange={handleChangeMessage}></input>
+      <div>--------</div>
       <div onClick={displayMessage}>display</div>
+      {messages.map((msg) => {
+        
+        return(
+          <div key={messages}>{msg}</div>
+        );
+      })}
     </div>
   );
 }
